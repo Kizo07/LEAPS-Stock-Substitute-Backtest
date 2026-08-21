@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Environments
+.venv/
+
+# Cached raw data (re-download via scripts/01_download_data.py)
+data/
+
+# Generated results (regenerate via scripts/run_all.sh)
+results/
+REPORT.md
+
+# Tooling
+.serena/

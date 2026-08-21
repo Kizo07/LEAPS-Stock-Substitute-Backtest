@@ -1,0 +1,9 @@
+# Installed into .venv (created with --system-site-packages; numpy/pandas/scipy/matplotlib
+# come from the system Anaconda install). Exact versions of the last full run are stamped
+# into results/tables_manifest.json by scripts/05_make_report.py.
+numpy>=2.4
+pandas>=3.0
+scipy>=1.18
+matplotlib>=3.11
+pyarrow>=23
+yfinance==1.6.0
