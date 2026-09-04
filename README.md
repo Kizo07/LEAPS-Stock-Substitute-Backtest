@@ -50,6 +50,30 @@ See [`ENHANCEMENTS.md`](ENHANCEMENTS.md) for the enhancement log and deliberatel
 deferred items (day-count unification, vectorized pricing, announced-dividend ingestion,
 GARCH vol alternative).
 
+## Research dossier (`research/`)
+
+Independent investigation run alongside (not inside) the engine — 8 notes,
+reproducible calculators, and result CSVs, snapshotted 2026-09-02 against
+chains/Treasury curve as of 2026-07-31:
+
+| Note | Question | Answer in one line |
+|---|---|---|
+| `01_parity_identity` | What is a "stock substitute"? | Put-call parity: you pay American, collect European (−4.3%/yr forfeited early-exercise premium) |
+| `02_embedded_financing` | What financing is embedded in quotes? | 61–131 bp over Treasuries on the deferred strike |
+| `03_capm` | Does CAPM hold for LEAPS? | Instantaneously exact (residual 1e-15); empirically no — TM γ = +6.8, t = 15.4 |
+| `04_structural_risks` | What breaks structurally? | Static book is a short strangle: −9.3% of capital over 2 yrs inside [−27%, +64%] |
+| `05_risk_taxonomy` | Full risk list? | 12 quantified risks; drift, short-strangle, short-leg capital, liquidity dominate |
+| `06_verdict` | Bottom line? | Not cheaper same-book — different strategy: V1 −30.1% vs V0 −6.7% CAGR, turnover the largest term |
+| `07_monte_carlo` | Attribution in a CAPM-true world? | Simulated P&L decomposition, E1–E8 battery incl. ruin + sensitivity sweeps |
+| `08_all_combinations` | Does any variant survive? | Full factorial over the design space |
+
+Headline: the LEAPS book is long convexity and long volatility with
+state-dependent beta (swings 0.77 up- vs down-market) and −36.4% FF3+MOM
+alpha — a linear factor model cannot absorb it. Reproduce any note from
+`research/calcs/` (closed-form/binomial maths verified against
+Black-Scholes) or the project's cached `data/`; result tables in
+`research/results/`.
+
 ### Notable fixes (2026-08)
 
 - BAW American-put premium used the wrong normal-CDF argument (`1−N(d1)` instead of
