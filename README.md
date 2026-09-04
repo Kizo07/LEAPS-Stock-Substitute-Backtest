@@ -74,6 +74,67 @@ alpha — a linear factor model cannot absorb it. Reproduce any note from
 Black-Scholes) or the project's cached `data/`; result tables in
 `research/results/`.
 
+## Findings: LEAPS book vs stock book
+
+The engine backtest (2007–2026, 36 names, monthly-rebalanced 2-yr LEAPS)
+and the independent dossier agree on the shape of the answer, and the
+Monte Carlo + 810-world factorial say which parts are policy vs physics.
+
+**Backtest head-to-head (project engine).** V0 = stock long/short,
+V1 = LEAPS long/short on the same names and signals:
+
+| | Stock book (V0) | LEAPS book (V1) | Gap |
+|---|---|---|---|
+| CAGR | −6.7%/yr | −30.1%/yr | **−23.4 pp** |
+| Annualised vol | 26.0% | 29.1% | +3.1 pp |
+| Sharpe | −0.14 | −1.09 | −0.95 |
+| FF3+MOM alpha | −8.7% (t −2.1) | **−36.4%** (t −6.8) | −27.7 pp |
+| Beta, down days | −0.13 | **−0.64** | regime flip |
+| Beta, up days | −0.34 | **+0.13** | regime flip |
+| Treynor-Mazuy γ | −1.3 | **+6.8** (t 15.4) | convex |
+| Loading on ΔVIX | −0.012 | **+0.024** (t 6.2) | long vol |
+
+Read the beta rows first: the stock book is roughly market-neutral in both
+regimes; the LEAPS book is net **short** after selloffs and net **long**
+after rallies — positioned worst exactly at turning points. That drift,
+plus long vega into a negative variance premium, is why a linear factor
+model prints −36% alpha: beta is not a sufficient statistic for this book.
+
+**Where the −23.4 pp goes (per year, per unit of book capital).**
+Forfeited early-exercise premium −4.3% (you pay American, collect
+European); variance risk premium −0.7 to −1.7%; embedded financing spread
+−0.4 to −1.1% (61–131 bp over Treasuries measured from live chains);
+dividend give-up net of carry ≈ −1.5% at sample-average rates (rate
+dependent — at today's 4.2% short rate the carry largely offsets it on
+sub-1.9% yielders); and monthly re-striking turnover, the largest single
+term (≈82%/yr of spread cost).
+
+**Structure vs frictions (Monte Carlo, 4,000 paths × 20 yrs, CAPM true by
+construction).** With all frictions off, the books differ by −0.03%/yr —
+nothing. Of the −9.8%/yr simulated gap: bid-ask/turnover 6.67, unexercised
+American premium 4.11, dividends 0.27; drift/gamma/theta net out. Two
+corrections to the analytic notes: the early-exercise premium and drift
+are *policy* costs (never-exercise, roll-monthly), not physics — policies
+can change; and Δ ≥ 0.90 is wrong at realistic spreads (deeper delta =
+more premium for the spread to eat): Δ=0.70 → −6.4%/yr vs Δ=0.95 →
+−18.1%/yr. Δ ≈ 0.75–0.80 is the sweet spot.
+
+**How much the answer moves (810-world factorial).** LEAPS-minus-stock gap:
+median −4.7%/yr, mean −7.4, P(win) 18%, P(dominated < −10%) 27%. Two
+parameters decide it — roll horizon (range 17.7 pp; 24-mo rolls −1.3 vs
+1-mo −19.0) and half-spread (10.9 pp), 44% of variance with their
+interaction. Funding spread, dividends, and stock-picking strategy are
+noise (ΔR² < 0.002). Churning at 200 bp spreads costs 21.6 pp/yr; at 12-mo
+rolls it costs 2.9.
+
+**When substitution is defensible:** capital-constrained accounts with no
+margin access, non-dividend names, low-vol names, Δ ≈ 0.75–0.80, held
+12–24 months — not the monthly-rebalanced 36-name backtest, which is
+dominated. The static structure is otherwise a short strangle (−9.3% of
+capital over two years inside [−27%, +64%]), the short leg needs 70% cash
+vs 20–50% stock margin, and deep-ITM quotes (210–286 bp wide, 0–8 lots)
+often don't trade at all.
+
 ### Notable fixes (2026-08)
 
 - BAW American-put premium used the wrong normal-CDF argument (`1−N(d1)` instead of
